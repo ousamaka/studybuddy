@@ -2,75 +2,82 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.chart.*?>
 <?import javafx.geometry.Insets?>
 
 <TabPane tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-         fx:controller="es.dam.ousama.controlador.DashboardControlador" prefHeight="700.0" prefWidth="1000.0">
+         fx:controller="es.dam.ousama.controlador.DashboardControlador" prefHeight="800.0" prefWidth="1200.0">
 
-    <Tab text="Mi Jardín">
-        <BorderPane>
+    <Tab text="Zona de Estudio">
+        <BorderPane style="-fx-background-color: #f8fafc;">
             <top>
-                <HBox alignment="CENTER_RIGHT" spacing="15.0" styleClass="elevated-1" style="-fx-padding: 10 20 10 20;">
+                <HBox alignment="CENTER_RIGHT" spacing="15.0" style="-fx-background-color: white; -fx-padding: 12 25; -fx-border-color: #e2e8f0; -fx-border-width: 0 0 1 0; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.02), 5, 0, 0, 2);">
                     <Label fx:id="lblUser" text="Usuario" styleClass="title-4" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
-                    <Button text="Cerrar Sesión" onAction="#cerrarSesion" styleClass="danger, outlined"/>
-                    <Button text="Salir" onAction="#salirApp" styleClass="danger"/>
+                    <Button text="Cerrar Sesión" onAction="#cerrarSesion" styleClass="danger, outlined" style="-fx-border-radius: 6;"/>
                 </HBox>
             </top>
-
             <center>
-                <VBox alignment="CENTER" spacing="25.0">
-                    <padding><Insets bottom="20" left="20" right="20" top="20"/></padding>
+                <VBox alignment="CENTER" spacing="30.0" maxWidth="900">
+                    <padding><Insets bottom="30" left="30" right="30" top="30"/></padding>
 
-                    <VBox alignment="CENTER" spacing="5">
-                        <Label fx:id="lblModo" text="Modo Enfoque" styleClass="title-3, accent"/>
-                        <Label fx:id="lblTiempo" text="25:00" style="-fx-font-size: 100px; -fx-font-weight: bold;" styleClass="accent"/>
+                    <VBox fx:id="tarjetaTemporizador" alignment="CENTER" spacing="10" style="-fx-padding: 40; -fx-background-color: #eff6ff; -fx-effect: dropshadow(three-pass-box, rgba(59,130,246,0.3), 20, 0, 0, 10); -fx-background-radius: 20; -fx-border-color: #93c5fd; -fx-border-width: 2; -fx-border-radius: 18;">
+                        <Label fx:id="lblModo" text="Modo Enfoque" style="-fx-font-size: 26px; -fx-text-fill: #2563eb; -fx-font-weight: bold;"/>
+                        <Label fx:id="lblAsignaturaActiva" text="Registrando: Estudio Libre" style="-fx-font-size: 16px; -fx-text-fill: #3b82f6;"/>
+                        <Label fx:id="lblTiempo" text="25:00" style="-fx-font-size: 150px; -fx-font-weight: bold; -fx-text-fill: #1e3a8a;"/>
+                        <ProgressBar fx:id="progresoSesion" progress="1.0" maxWidth="550" prefHeight="18" style="-fx-accent: #3b82f6; -fx-control-inner-background: #dbeafe;"/>
+                        <Button fx:id="btnOmitir" text="Saltar Descanso ⏭" onAction="#omitirDescanso" visible="false" managed="false" style="-fx-background-color: #10b981; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 20; -fx-padding: 8 20; -fx-cursor: hand;"/>
                     </VBox>
 
-                    <HBox alignment="CENTER" spacing="20" styleClass="elevated-2" style="-fx-padding: 15; -fx-background-radius: 10;" maxWidth="400">
-                        <VBox alignment="CENTER" spacing="5">
-                            <Label text="Estudio (min)" styleClass="text-muted"/>
-                            <Spinner fx:id="spinEstudio" prefWidth="80"/>
-                        </VBox>
-                        <VBox alignment="CENTER" spacing="5">
-                            <Label text="Descanso (min)" styleClass="text-muted"/>
-                            <Spinner fx:id="spinDescanso" prefWidth="80"/>
-                        </VBox>
-                        <Button text="Aplicar" onAction="#aplicarConfiguracion" styleClass="accent"/>
+                    <HBox alignment="CENTER" spacing="30" style="-fx-padding: 20 40; -fx-background-color: white; -fx-background-radius: 15; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.04), 10, 0, 0, 4); -fx-border-color: #e2e8f0; -fx-border-radius: 13;">
+                        <VBox alignment="CENTER" spacing="5"><Label text="Estudio (min)" style="-fx-text-fill: #64748b; -fx-font-weight: bold;"/><Spinner fx:id="spinEstudio" prefWidth="110" editable="true"/></VBox>
+                        <VBox alignment="CENTER" spacing="5"><Label text="Descanso (min)" style="-fx-text-fill: #64748b; -fx-font-weight: bold;"/><Spinner fx:id="spinDescanso" prefWidth="110" editable="true"/></VBox>
+                        <VBox alignment="CENTER" spacing="5"><Label text="Meta (min)" style="-fx-text-fill: #64748b; -fx-font-weight: bold;"/><Spinner fx:id="spinMeta" prefWidth="110" editable="true"/></VBox>
+                        <Button text="Aplicar" onAction="#aplicarConfiguracion" style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8;" styleClass="accent" translateY="10"/>
                     </HBox>
 
-                    <VBox alignment="CENTER" spacing="10" maxWidth="350">
-                        <Label text="Meta Diaria" styleClass="title-4"/>
-                        <ProgressBar fx:id="progresoDiario" progress="0.0" maxWidth="Infinity" prefHeight="15" styleClass="success"/>
+                    <VBox alignment="CENTER" spacing="10" maxWidth="550">
+                        <HBox alignment="CENTER_LEFT"><Label text="Progreso Diario" styleClass="title-4" style="-fx-text-fill: #334155;"/><Region HBox.hgrow="ALWAYS"/><Label fx:id="lblMetaTexto" text="0 / 60 min" style="-fx-text-fill: #64748b; -fx-font-weight: bold;"/></HBox>
+                        <ProgressBar fx:id="progresoDiario" progress="0.0" maxWidth="Infinity" prefHeight="25" style="-fx-accent: #22c55e;"/>
                     </VBox>
 
-                    <Button fx:id="btnAccion" text="Iniciar Estudio" onAction="#gestionarTemporizador"
-                            styleClass="success, large" prefWidth="250" prefHeight="55"/>
+                    <HBox alignment="CENTER" spacing="25">
+                        <Button fx:id="btnAccion" text="Iniciar Estudio" onAction="#gestionarTemporizador" styleClass="success" style="-fx-font-size: 22px; -fx-padding: 15 50; -fx-background-radius: 30; -fx-font-weight: bold; -fx-effect: dropshadow(three-pass-box, rgba(34,197,94,0.4), 10, 0, 0, 4);"/>
+                        <Button fx:id="btnAbandonar" text="Abandonar" onAction="#abandonarSesion" visible="false" managed="false" styleClass="danger" style="-fx-font-size: 16px; -fx-padding: 15 25; -fx-background-radius: 20;"/>
+                    </HBox>
                 </VBox>
             </center>
-
             <right>
-                <VBox spacing="15" style="-fx-padding: 25; -fx-background-color: #f8f9fa;" prefWidth="280">
-                    <Label text="Mis Asignaturas" styleClass="title-4"/>
-                    <HBox spacing="10">
-                        <TextField fx:id="txtNuevaAsignatura" promptText="Nueva..." HBox.hgrow="ALWAYS"/>
-                        <Button text="+" onAction="#agregarAsignatura" styleClass="accent"/>
-                    </HBox>
-                    <ListView fx:id="listaAsignaturas" VBox.vgrow="ALWAYS"/>
-                    <Button text="Eliminar" onAction="#eliminarAsignatura" styleClass="danger, outlined" maxWidth="Infinity"/>
+                <VBox spacing="20" style="-fx-padding: 35; -fx-background-color: white; -fx-border-color: #e2e8f0; -fx-border-width: 0 0 0 1;" prefWidth="380" minWidth="320">
+                    <Label text="Tus Asignaturas" styleClass="title-2" style="-fx-text-fill: #0f172a;"/>
+                    <HBox spacing="10"><TextField fx:id="txtNuevaAsignatura" promptText="Nueva materia..." HBox.hgrow="ALWAYS" style="-fx-background-radius: 6;"/><Button text="+" onAction="#agregarAsignatura" styleClass="accent" style="-fx-background-radius: 6;"/></HBox>
+                    <Label text="Selecciona para registrar tiempo:" style="-fx-text-fill: #64748b;"/>
+                    <ListView fx:id="listaAsignaturas" VBox.vgrow="ALWAYS" style="-fx-background-color: transparent; -fx-border-color: #cbd5e1; -fx-border-radius: 8; -fx-padding: 5; -fx-font-size: 14px;"/>
+                    <Button text="Eliminar Seleccionada" onAction="#eliminarAsignatura" styleClass="danger, outlined" maxWidth="Infinity" style="-fx-border-radius: 6;"/>
                 </VBox>
             </right>
         </BorderPane>
     </Tab>
 
-    <Tab text="Estadísticas">
-        <VBox alignment="CENTER" spacing="30" style="-fx-padding: 50;">
-            <Label text="Rendimiento de Estudio" styleClass="title-2"/>
-            <HBox alignment="CENTER" spacing="40">
-                <VBox alignment="CENTER">
-                    <Label text="Total XP" styleClass="text-muted"/>
-                    <Label fx:id="lblTotalXP" text="0" styleClass="title-1, success"/>
-                </VBox>
-            </HBox>
+    <Tab text="Mi Jardín">
+        <VBox alignment="CENTER" spacing="20" style="-fx-background-color: #f0fdf4;">
+            <Label text="🌱 Tu Invernadero Virtual" styleClass="title-1, success"/>
+            <Label text="Aquí podrás invertir tu XP." styleClass="title-4, text-muted"/>
         </VBox>
+    </Tab>
+
+    <Tab fx:id="tabEstadisticas" text="Estadísticas">
+        <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;">
+            <VBox alignment="TOP_CENTER" spacing="35" style="-fx-padding: 40; -fx-background-color: #f8fafc;">
+                <HBox spacing="30" alignment="CENTER" maxWidth="1000">
+                    <VBox alignment="CENTER" HBox.hgrow="ALWAYS" style="-fx-background-color: white; -fx-background-radius: 15; -fx-padding: 30; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.03), 10, 0, 0, 4);"><Label text="Hoy" style="-fx-text-fill: #64748b; -fx-font-weight: bold;"/><Label fx:id="lblHoy" text="0h 0m" style="-fx-font-size: 46px; -fx-font-weight: bold; -fx-text-fill: #0969da;"/></VBox>
+                    <VBox alignment="CENTER" HBox.hgrow="ALWAYS" style="-fx-background-color: white; -fx-background-radius: 15; -fx-padding: 30; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.03), 10, 0, 0, 4);"><Label text="Últimos 7 Días" style="-fx-text-fill: #64748b; -fx-font-weight: bold;"/><Label fx:id="lblSemana" text="0h 0m" style="-fx-font-size: 46px; -fx-font-weight: bold; -fx-text-fill: #10b981;"/></VBox>
+                    <VBox alignment="CENTER" HBox.hgrow="ALWAYS" style="-fx-background-color: white; -fx-background-radius: 15; -fx-padding: 30; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.03), 10, 0, 0, 4);"><Label text="Total XP" style="-fx-text-fill: #64748b; -fx-font-weight: bold;"/><Label fx:id="lblTotalXP" text="0 XP" style="-fx-font-size: 46px; -fx-font-weight: bold; -fx-text-fill: #0f172a;"/></VBox>
+                </HBox>
+                <HBox spacing="30" alignment="CENTER" maxWidth="1000">
+                    <VBox HBox.hgrow="ALWAYS" style="-fx-background-color: white; -fx-padding: 35; -fx-background-radius: 15; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.03), 10, 0, 0, 4);"><Label text="Actividad Diaria" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #334155;"/><BarChart fx:id="chartSemana" prefHeight="400" legendVisible="false" animated="false"><xAxis><CategoryAxis label="Fecha"/></xAxis><yAxis><NumberAxis label="Minutos"/></yAxis></BarChart></VBox>
+                    <VBox prefWidth="450" style="-fx-background-color: white; -fx-padding: 35; -fx-background-radius: 15; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.03), 10, 0, 0, 4);"><Label text="Distribución de Materias" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #334155;"/><PieChart fx:id="chartAsignaturas" prefHeight="400" labelsVisible="false" legendSide="BOTTOM" animated="false"/></VBox>
+                </HBox>
+            </VBox>
+        </ScrollPane>
     </Tab>
 </TabPane>

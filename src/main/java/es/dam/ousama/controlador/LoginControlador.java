@@ -18,7 +18,6 @@ public class LoginControlador {
     @FXML private PasswordField txtPass;
     @FXML private Label lblError;
 
-    // --- BOTÓN INICIAR SESIÓN ---
     @FXML
     private void iniciarSesion() {
         String user = txtUsuario.getText();
@@ -45,7 +44,6 @@ public class LoginControlador {
         }).start();
     }
 
-    // --- BOTÓN REGISTRARSE (Este es el que te faltaba) ---
     @FXML
     private void registrarUsuario() {
         String user = txtUsuario.getText();
@@ -64,7 +62,7 @@ public class LoginControlador {
             Platform.runLater(() -> {
                 if (exito) {
                     actualizarMensaje("¡Cuenta creada! Ya puedes iniciar sesión", "success");
-                    txtPass.clear(); // Borramos la clave por seguridad
+                    txtPass.clear();
                 } else {
                     actualizarMensaje("El nombre de usuario ya existe", "danger");
                 }
@@ -73,7 +71,6 @@ public class LoginControlador {
         }).start();
     }
 
-    // --- UTILIDADES ---
     private void irAlDashboard(String nombre) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/es/dam/ousama/vista/Dashboard.fxml"));
@@ -82,10 +79,14 @@ public class LoginControlador {
             dash.initData(nombre);
 
             Stage stage = (Stage) txtUsuario.getScene().getWindow();
+
+            // TRUCO: Forzamos a JavaFX a recalcular la ventana quitando el maximizado primero
+            stage.setMaximized(false);
             stage.setScene(new Scene(root));
             stage.setResizable(true);
-            stage.setMaximized(true); // PANTALLA COMPLETA AUTOMÁTICA
+            stage.setMaximized(true); // Ahora SÍ ocupará toda la pantalla de forma fiable
             stage.setTitle("StudyBuddy - Dashboard");
+
         } catch (Exception e) {
             e.printStackTrace();
             actualizarMensaje("Error al cargar la aplicación", "danger");
