@@ -37,6 +37,7 @@ public class UsuarioDAO {
         if (user != null) {
             Estudiante e = new Estudiante(u);
             e.setPuntosCrecimiento(user.getInteger("xp", 0));
+            e.setMonedasXP(user.getInteger("monedas", 0)); // Rescatamos las monedas
             e.setMinutosEstudio(user.getInteger("minEstudio", 25));
             e.setMinutosDescanso(user.getInteger("minDescanso", 5));
             e.setMetaDiariaMinutos(user.getInteger("metaDiaria", 60));
@@ -48,11 +49,23 @@ public class UsuarioDAO {
     public boolean registrar(String username, String password) {
         if (usuarios.find(new Document("username", username)).first() != null) return false;
         Document nuevo = new Document("username", username)
-                .append("password", password).append("xp", 0).append("minEstudio", 25)
-                .append("minDescanso", 5).append("metaDiaria", 60)
+                .append("password", password)
+                .append("xp", 0)
+                .append("monedas", 0)
+                .append("minEstudio", 25)
+                .append("minDescanso", 5)
+                .append("metaDiaria", 60)
                 .append("misAsignaturas", Arrays.asList("Estudio Libre"));
         usuarios.insertOne(nuevo);
         return true;
+    }
+
+    // Método nuevo para la tienda
+    public void actualizarMonedasYXP(String u, int monedas, int xpTotal) {
+        try {
+            usuarios.updateOne(new Document("username", u),
+                    new Document("$set", new Document("monedas", monedas).append("xp", xpTotal)));
+        } catch (Exception e) {}
     }
 
     public void guardarConfiguracion(String username, int estudio, int descanso, int meta) {

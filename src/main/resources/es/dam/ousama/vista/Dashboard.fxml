@@ -59,10 +59,56 @@
     </Tab>
 
     <Tab text="Mi Jardín">
-        <VBox alignment="CENTER" spacing="20" style="-fx-background-color: #f0fdf4;">
-            <Label text="🌱 Tu Invernadero Virtual" styleClass="title-1, success"/>
-            <Label text="Aquí podrás invertir tu XP." styleClass="title-4, text-muted"/>
-        </VBox>
+        <BorderPane style="-fx-background-color: #f0fdf4;">
+
+            <center>
+                <VBox alignment="CENTER" spacing="20">
+                    <Label text="Tu Invernadero" styleClass="title-2" style="-fx-text-fill: #166534;"/>
+                    <Label text="Haz clic en una parcela para plantar una semilla de tu inventario." styleClass="text-muted"/>
+
+                    <GridPane fx:id="gridJardin" alignment="CENTER" hgap="15" vgap="15" style="-fx-padding: 20; -fx-background-color: #dcfce7; -fx-background-radius: 15; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5);" maxWidth="600">
+                        <Button text="+" GridPane.columnIndex="0" GridPane.rowIndex="0" prefWidth="120" prefHeight="120" style="-fx-background-color: #8b4513; -fx-text-fill: #d2b48c; -fx-font-size: 30px; -fx-background-radius: 10; -fx-cursor: hand;"/>
+                        <Button text="🌱" GridPane.columnIndex="1" GridPane.rowIndex="0" prefWidth="120" prefHeight="120" style="-fx-background-color: #8b4513; -fx-font-size: 50px; -fx-background-radius: 10;"/>
+                        <Button text="+" GridPane.columnIndex="2" GridPane.rowIndex="0" prefWidth="120" prefHeight="120" style="-fx-background-color: #8b4513; -fx-text-fill: #d2b48c; -fx-font-size: 30px; -fx-background-radius: 10; -fx-cursor: hand;"/>
+                        <Button text="🌳" GridPane.columnIndex="0" GridPane.rowIndex="1" prefWidth="120" prefHeight="120" style="-fx-background-color: #8b4513; -fx-font-size: 60px; -fx-background-radius: 10;"/>
+                        <Button text="+" GridPane.columnIndex="1" GridPane.rowIndex="1" prefWidth="120" prefHeight="120" style="-fx-background-color: #8b4513; -fx-text-fill: #d2b48c; -fx-font-size: 30px; -fx-background-radius: 10; -fx-cursor: hand;"/>
+                        <Button text="+" GridPane.columnIndex="2" GridPane.rowIndex="1" prefWidth="120" prefHeight="120" style="-fx-background-color: #8b4513; -fx-text-fill: #d2b48c; -fx-font-size: 30px; -fx-background-radius: 10; -fx-cursor: hand;"/>
+                    </GridPane>
+                </VBox>
+            </center>
+
+            <right>
+                <VBox spacing="20" style="-fx-background-color: white; -fx-padding: 30; -fx-border-color: #bbf7d0; -fx-border-width: 0 0 0 2;" prefWidth="350">
+
+                    <HBox alignment="CENTER" style="-fx-background-color: #fef3c7; -fx-padding: 15; -fx-background-radius: 10;">
+                        <Label text="Tus Monedas: " styleClass="title-4" style="-fx-text-fill: #92400e;"/>
+                        <Label fx:id="lblMonedas" text="0 XP" styleClass="title-3" style="-fx-text-fill: #d97706; -fx-font-weight: bold;"/>
+                    </HBox>
+
+                    <Label text="🏪 Tienda Botánica" styleClass="title-3" style="-fx-text-fill: #166534;"/>
+                    <VBox spacing="10">
+                        <HBox alignment="CENTER_LEFT" spacing="10" style="-fx-padding: 10; -fx-border-color: #e2e8f0; -fx-border-radius: 5;">
+                            <Label text="🌵 Semilla Cactus" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+                            <Button text="50 XP" styleClass="success, small"/>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" spacing="10" style="-fx-padding: 10; -fx-border-color: #e2e8f0; -fx-border-radius: 5;">
+                            <Label text="🌳 Semilla Bonsái" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+                            <Button text="200 XP" styleClass="success, small"/>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" spacing="10" style="-fx-padding: 10; -fx-border-color: #e2e8f0; -fx-border-radius: 5;">
+                            <Label text="🌻 Semilla Girasol" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+                            <Button text="500 XP" styleClass="success, small"/>
+                        </HBox>
+                    </VBox>
+
+                    <Separator/>
+
+                    <Label text="🎒 Tu Mochila" styleClass="title-3" style="-fx-text-fill: #166534;"/>
+                    <ListView fx:id="listaInventario" VBox.vgrow="ALWAYS" style="-fx-background-color: transparent;"/>
+                </VBox>
+            </right>
+
+        </BorderPane>
     </Tab>
 
     <Tab fx:id="tabEstadisticas" text="Estadísticas">

@@ -31,7 +31,11 @@ public class DashboardControlador {
     @FXML private PieChart chartAsignaturas;
     @FXML private BarChart<String, Number> chartSemana;
     @FXML private Tab tabEstadisticas;
-    @FXML private VBox tarjetaTemporizador; // NUEVO: Para cambiar el color de fondo
+    @FXML private VBox tarjetaTemporizador;
+
+    // --- NUEVOS ELEMENTOS DE LA TIENDA ---
+    @FXML private Label lblMonedas;
+    @FXML private ListView<String> listaInventario;
 
     private Estudiante estudiante;
     private ObservableList<String> misAsignaturas;
@@ -127,6 +131,7 @@ public class DashboardControlador {
             Platform.runLater(() -> {
                 if (estBD != null) {
                     estudiante.setPuntosCrecimiento(estBD.getPuntosCrecimiento());
+                    estudiante.setMonedasXP(estBD.getMonedasXP()); // Cargamos saldo
                     estudiante.setMinutosEstudio(estBD.getMinutosEstudio());
                     estudiante.setMinutosDescanso(estBD.getMinutosDescanso());
                     estudiante.setMetaDiariaMinutos(estBD.getMetaDiariaMinutos());
@@ -134,6 +139,7 @@ public class DashboardControlador {
 
                 if (lblUser != null) lblUser.setText("Usuario: " + username + " (Nivel " + estudiante.getNivel() + ")");
                 if (lblTotalXP != null) lblTotalXP.setText(estudiante.getPuntosCrecimiento() + " XP");
+                if (lblMonedas != null) lblMonedas.setText(estudiante.getMonedasXP() + " XP");
 
                 if (spinEstudio != null) spinEstudio.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 120, estudiante.getMinutosEstudio()));
                 if (spinDescanso != null) spinDescanso.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 30, estudiante.getMinutosDescanso()));
@@ -145,6 +151,7 @@ public class DashboardControlador {
                     listaAsignaturas.getSelectionModel().selectFirst();
                 }
 
+                actualizarListaInventario();
                 configurarReloj();
                 tiempoTotalOriginal = estudiante.getMinutosEstudio() * 60;
                 tiempoRestante = tiempoTotalOriginal;
@@ -199,6 +206,7 @@ public class DashboardControlador {
                 }
 
                 if (lblTotalXP != null) lblTotalXP.setText(estudiante.getPuntosCrecimiento() + " XP");
+                if (lblMonedas != null) lblMonedas.setText(estudiante.getMonedasXP() + " XP");
                 if (lblUser != null) lblUser.setText("Usuario: " + estudiante.getNombre() + " (Nivel " + estudiante.getNivel() + ")");
             }
 
@@ -217,19 +225,15 @@ public class DashboardControlador {
         }).start();
     }
 
-    // EL NUEVO POMODORO AUTOMÁTICO
     private void terminarFase() {
-        // AVISO: El timeline YA NO se pausa aquí. Fluye solo.
         java.awt.Toolkit.getDefaultToolkit().beep();
 
         if (!esModoDescanso) {
-            // Acaba de terminar de estudiar -> Empieza el descanso
             esModoDescanso = true;
             if (btnOmitir != null) { btnOmitir.setVisible(true); btnOmitir.setManaged(true); }
             if (lblModo != null) lblModo.setText("Modo Descanso");
             tiempoTotalOriginal = estudiante.getMinutosDescanso() * 60;
         } else {
-            // Acaba de terminar el descanso -> Vuelve a estudiar automáticamente
             esModoDescanso = false;
             if (btnOmitir != null) { btnOmitir.setVisible(false); btnOmitir.setManaged(false); }
             if (lblModo != null) lblModo.setText("Modo Enfoque");
@@ -243,20 +247,17 @@ public class DashboardControlador {
         actualizarReloj();
     }
 
-    // EL CAMBIO VISUAL DE 180 GRADOS
     private void actualizarColoresFase() {
         Platform.runLater(() -> {
             if (tarjetaTemporizador == null) return;
 
             if (esModoDescanso) {
-                // Tema Descanso: Verdes / Mentas relajantes
                 tarjetaTemporizador.setStyle("-fx-padding: 40; -fx-background-color: #ecfdf5; -fx-effect: dropshadow(three-pass-box, rgba(16,185,129,0.3), 20, 0, 0, 10); -fx-background-radius: 20; -fx-border-color: #a7f3d0; -fx-border-width: 2; -fx-border-radius: 18;");
                 if (lblModo != null) lblModo.setStyle("-fx-font-size: 26px; -fx-text-fill: #059669; -fx-font-weight: bold;");
                 if (lblTiempo != null) lblTiempo.setStyle("-fx-font-size: 150px; -fx-font-weight: bold; -fx-text-fill: #064e3b;");
                 if (lblAsignaturaActiva != null) lblAsignaturaActiva.setStyle("-fx-font-size: 16px; -fx-text-fill: #10b981;");
                 if (progresoSesion != null) progresoSesion.setStyle("-fx-accent: #10b981; -fx-control-inner-background: #d1fae5;");
             } else {
-                // Tema Estudio: Azules hielo y marinos que invitan a la concentración
                 tarjetaTemporizador.setStyle("-fx-padding: 40; -fx-background-color: #eff6ff; -fx-effect: dropshadow(three-pass-box, rgba(59,130,246,0.3), 20, 0, 0, 10); -fx-background-radius: 20; -fx-border-color: #93c5fd; -fx-border-width: 2; -fx-border-radius: 18;");
                 if (lblModo != null) lblModo.setStyle("-fx-font-size: 26px; -fx-text-fill: #2563eb; -fx-font-weight: bold;");
                 if (lblTiempo != null) lblTiempo.setStyle("-fx-font-size: 150px; -fx-font-weight: bold; -fx-text-fill: #1e3a8a;");
@@ -417,6 +418,43 @@ public class DashboardControlador {
             misAsignaturas.remove(seleccionada);
             sincronizarMisAsignaturasConBD();
         }
+    }
+
+    // --- MÉTODOS DE LA TIENDA Y JARDÍN ---
+
+    @FXML
+    private void comprarCactus() { procesarCompra("Cactus", 50); }
+
+    @FXML
+    private void comprarBonsai() { procesarCompra("Bonsái", 200); }
+
+    private void procesarCompra(String tipo, int precio) {
+        if (estudiante.gastarMonedas(precio)) {
+            estudiante.añadirSemilla(tipo);
+            if (lblMonedas != null) lblMonedas.setText(estudiante.getMonedasXP() + " XP");
+            actualizarListaInventario();
+            sincronizarMonedasConNube();
+        } else {
+            mostrarAlerta("Saldo insuficiente", "No tienes suficiente XP para esta semilla.", "¡Sigue estudiando para conseguir más!");
+        }
+    }
+
+    private void actualizarListaInventario() {
+        if (listaInventario != null) {
+            ObservableList<String> items = FXCollections.observableArrayList();
+            estudiante.getInventarioSemillas().forEach((tipo, cantidad) -> {
+                items.add(tipo + " (x" + cantidad + ")");
+            });
+            listaInventario.setItems(items);
+        }
+    }
+
+    private void sincronizarMonedasConNube() {
+        new Thread(() -> {
+            UsuarioDAO dao = new UsuarioDAO();
+            dao.actualizarMonedasYXP(estudiante.getNombre(), estudiante.getMonedasXP(), estudiante.getPuntosCrecimiento());
+            dao.cerrarConexion();
+        }).start();
     }
 
     @FXML private void cerrarSesion() {
