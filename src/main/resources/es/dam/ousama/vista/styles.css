@@ -1,0 +1,109 @@
+/*
+ * Apaño vital para que pille bien los emojis en Windows,
+ * si no JavaFX te clava unos cuadrados blancos (los famosos "tofus") que dan asco.
+ */
+.root {
+    -fx-font-family: "Segoe UI Emoji", "Segoe UI", Helvetica, Arial, sans-serif;
+}
+
+/* =======================================================
+   ZONA DEL HUERTO Y MACETAS
+   ======================================================= */
+
+/* Maceta vacía: Le meto un gradiente marrón y una sombra interior oscura
+   para que parezca que la tierra está hundida (efecto agujero o maceta real) */
+.parcela-tierra {
+    -fx-background-color: linear-gradient(to bottom right, #8B5A2B, #5C3A21);
+    -fx-background-radius: 12;
+    -fx-border-color: #3E2723;
+    -fx-border-width: 3;
+    -fx-border-radius: 10;
+    -fx-text-fill: rgba(255, 255, 255, 0.4);
+    -fx-font-size: 30px;
+    -fx-cursor: hand;
+    -fx-effect: innershadow(three-pass-box, rgba(0,0,0,0.6), 10, 0, 0, 0);
+    -fx-transition: -fx-background-color 0.3s, -fx-effect 0.3s;
+}
+
+/* Brilli-brilli al pasar el ratón para que el usuario pille rápido que se puede interactuar */
+.parcela-tierra:hover {
+    -fx-background-color: linear-gradient(to bottom right, #A06935, #6B4426);
+    -fx-text-fill: rgba(255, 255, 255, 0.8);
+    -fx-effect: innershadow(three-pass-box, rgba(0,0,0,0.4), 10, 0, 0, 0) , dropshadow(three-pass-box, rgba(34, 197, 94, 0.5), 15, 0, 0, 0);
+}
+
+/* Cuando ya hay semilla o planta: Borde verde y fuente enorme porque el emoji renderiza como texto */
+.parcela-plantada {
+    -fx-background-color: linear-gradient(to bottom right, #8B5A2B, #5C3A21);
+    -fx-background-radius: 12;
+    -fx-border-color: #22C55E;
+    -fx-border-width: 3;
+    -fx-border-radius: 10;
+    -fx-font-size: 60px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 10, 0, 0, 5);
+}
+
+/* Pequeño glow verde al pasar el ratón por encima de tu planta */
+.parcela-plantada:hover {
+    -fx-effect: dropshadow(three-pass-box, rgba(34, 197, 94, 0.6), 20, 0, 0, 5);
+}
+
+/* =======================================================
+   LA TIENDA BOTÁNICA
+   ======================================================= */
+
+/* Las tarjetas de los items. Lo mantengo limpio y con fondo blanco, rollo diseño web moderno */
+.item-tienda {
+    -fx-padding: 12;
+    -fx-background-color: white;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
+
+/* Feedback visual al pasar por encima de un item en el catálogo */
+.item-tienda:hover {
+    -fx-background-color: #F8FAFC;
+    -fx-border-color: #22C55E;
+    -fx-effect: dropshadow(three-pass-box, rgba(34, 197, 94, 0.2), 10, 0, 0, 2);
+}
+
+/* El botón de soltar la pasta. Verde clásico de "comprar" o "aceptar" */
+.btn-comprar {
+    -fx-background-color: #10B981;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 6;
+    -fx-cursor: hand;
+}
+
+.btn-comprar:hover {
+    -fx-background-color: #059669;
+}
+
+/* =======================================================
+   ESTADOS DE SUPERVIVENCIA (El modo triste)
+   ======================================================= */
+
+/*
+ * El modo RIP. Si el usuario pasa de la planta, se pone oscura y con borde rojo sangre.
+ * Le bajo un poco la opacidad y el tamaño de la fuente para que el emoji parezca mustio de verdad.
+ */
+.parcela-marchita {
+    -fx-background-color: linear-gradient(to bottom right, #451a03, #1e293b);
+    -fx-background-radius: 12;
+    -fx-border-color: #dc2626;
+    -fx-border-width: 3;
+    -fx-border-radius: 10;
+    -fx-font-size: 50px;
+    -fx-cursor: hand;
+    -fx-opacity: 0.8;
+    -fx-effect: innershadow(three-pass-box, rgba(220, 38, 38, 0.4), 15, 0, 0, 0);
+}
+
+/* Aviso de que está muriendo y tienes que clicar para meterla de urgencias en el hospital */
+.parcela-marchita:hover {
+    -fx-effect: dropshadow(three-pass-box, rgba(220, 38, 38, 0.8), 20, 0, 0, 0);
+}

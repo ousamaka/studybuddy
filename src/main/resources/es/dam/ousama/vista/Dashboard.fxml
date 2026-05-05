@@ -5,125 +5,317 @@
 <?import javafx.scene.chart.*?>
 <?import javafx.geometry.Insets?>
 
+<!--
+  Ventana principal de la aplicación.
+  Lo metí todo en un TabPane para tener 3 pantallas en 1 sin tener que andar abriendo y cerrando ventanas nuevas, que es un dolor.
+  Ojo: el stylesheets="styles.css" tiene que cargar bien o se verá todo feísimo.
+-->
 <TabPane tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-         fx:controller="es.dam.ousama.controlador.DashboardControlador" prefHeight="800.0" prefWidth="1200.0">
+         fx:controller="es.dam.ousama.controlador.DashboardControlador" prefHeight="800.0" prefWidth="1300.0" stylesheets="@styles.css">
 
+    <!-- ======================================================= -->
+    <!-- PESTAÑA 1: EL POMODORO Y LAS MISIONES                   -->
+    <!-- ======================================================= -->
     <Tab text="Zona de Estudio">
-        <BorderPane style="-fx-background-color: #f8fafc;">
+        <BorderPane style="-fx-background-color: #f1f5f9;">
+
+            <!-- CABECERA DE LA APP -->
+            <!-- Antes era un botón gigante, ahora es una barra de navegación fija arriba. Queda mucho más pro. -->
             <top>
-                <HBox alignment="CENTER_RIGHT" spacing="15.0" style="-fx-background-color: white; -fx-padding: 12 25; -fx-border-color: #e2e8f0; -fx-border-width: 0 0 1 0; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.02), 5, 0, 0, 2);">
-                    <Label fx:id="lblUser" text="Usuario" styleClass="title-4" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
-                    <Button text="Cerrar Sesión" onAction="#cerrarSesion" styleClass="danger, outlined" style="-fx-border-radius: 6;"/>
+                <HBox alignment="CENTER_LEFT" spacing="20.0" style="-fx-background-color: white; -fx-padding: 10 30; -fx-border-color: #e2e8f0; -fx-border-width: 0 0 1 0; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.02), 5, 0, 0, 2);">
+                    <HBox alignment="CENTER" style="-fx-background-color: #f8fafc; -fx-padding: 10; -fx-background-radius: 10; -fx-border-color: #e2e8f0; -fx-border-radius: 10;">
+                        <Label text="🎓" style="-fx-font-size: 24px;"/>
+                    </HBox>
+                    <VBox spacing="2" alignment="CENTER_LEFT" prefWidth="200">
+                        <Label fx:id="lblUser" text="Usuario" style="-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: #0f172a;"/>
+                        <Label fx:id="lblRango" text="Rango: Cargando..." style="-fx-text-fill: #3b82f6; -fx-font-weight: bold; -fx-font-size: 13px;"/>
+                    </VBox>
+
+                    <!-- Barra de nivel. Le puse maxWidth Infinity para que se estire y no aplaste el texto si llegas a nvl 100 -->
+                    <VBox alignment="CENTER_LEFT" spacing="5" HBox.hgrow="ALWAYS" maxWidth="450">
+                        <HBox alignment="CENTER_LEFT">
+                            <Label text="Progreso Académico" style="-fx-text-fill: #64748b; -fx-font-size: 12px; -fx-font-weight: bold;"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Label fx:id="lblXpSiguienteNivel" text="0/100 XP" style="-fx-text-fill: #d97706; -fx-font-size: 12px; -fx-font-weight: bold;"/>
+                        </HBox>
+                        <ProgressBar fx:id="progresoNivel" progress="0.0" maxWidth="Infinity" prefHeight="8" style="-fx-accent: #f59e0b; -fx-control-inner-background: #fef3c7; -fx-background-radius: 10;"/>
+                    </VBox>
+
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button text="Cerrar Sesión" onAction="#cerrarSesion" style="-fx-background-color: #fee2e2; -fx-text-fill: #ef4444; -fx-font-weight: bold; -fx-padding: 8 15; -fx-background-radius: 8; -fx-cursor: hand;"/>
                 </HBox>
             </top>
+
+            <!-- PANEL IZQUIERDO: MISIONES Y MATERIAS -->
+            <!-- Le metí un ScrollPane por si el usuario añade 40 asignaturas y se sale de la pantalla -->
+            <left>
+                <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-border-color: transparent;">
+                    <VBox spacing="25" prefWidth="320" style="-fx-padding: 25; -fx-background-color: white; -fx-border-color: #e2e8f0; -fx-border-width: 0 1 0 0; min-height: 800px;">
+
+                        <!-- Bloque de misiones diarias (farmeo) -->
+                        <VBox spacing="15">
+                            <Label text="🎯 Misiones Diarias" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #0f172a;"/>
+                            <VBox spacing="10" style="-fx-background-color: #f8fafc; -fx-padding: 15; -fx-border-radius: 10; -fx-border-color: #e2e8f0;">
+                                <CheckBox fx:id="chkMision1" text="Estudia tu Meta Diaria" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+                                <HBox alignment="CENTER_LEFT" spacing="10">
+                                    <Label text="Premio: 100 🪙" style="-fx-text-fill: #d97706; -fx-font-weight: bold;"/>
+                                    <Region HBox.hgrow="ALWAYS"/>
+                                    <Button fx:id="btnReclamarM1" text="Reclamar" disable="true" onAction="#reclamarMision1" style="-fx-background-color: #22c55e; -fx-text-fill: white; -fx-background-radius: 6; -fx-font-weight: bold; -fx-cursor: hand;"/>
+                                </HBox>
+                            </VBox>
+                            <VBox spacing="10" style="-fx-background-color: #f8fafc; -fx-padding: 15; -fx-border-radius: 10; -fx-border-color: #e2e8f0;">
+                                <CheckBox fx:id="chkMision2" text="Riega 1 planta" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+                                <HBox alignment="CENTER_LEFT" spacing="10">
+                                    <Label text="Premio: 20 💧" style="-fx-text-fill: #0ea5e9; -fx-font-weight: bold;"/>
+                                    <Region HBox.hgrow="ALWAYS"/>
+                                    <Button fx:id="btnReclamarM2" text="Reclamar" disable="true" onAction="#reclamarMision2" style="-fx-background-color: #22c55e; -fx-text-fill: white; -fx-background-radius: 6; -fx-font-weight: bold; -fx-cursor: hand;"/>
+                                </HBox>
+                            </VBox>
+                        </VBox>
+
+                        <Separator/>
+
+                        <!-- Bloque de asignaturas -->
+                        <VBox spacing="15" VBox.vgrow="ALWAYS">
+                            <Label text="📚 Asignaturas" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #0f172a;"/>
+                            <HBox spacing="10">
+                                <TextField fx:id="txtNuevaAsignatura" promptText="Nueva materia..." HBox.hgrow="ALWAYS" style="-fx-padding: 8; -fx-background-radius: 6; -fx-border-color: #cbd5e1; -fx-border-radius: 6;"/>
+                                <Button text="+" onAction="#agregarAsignatura" style="-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 6; -fx-cursor: hand;"/>
+                            </HBox>
+                            <ListView fx:id="listaAsignaturas" prefHeight="200" VBox.vgrow="ALWAYS" style="-fx-background-color: transparent; -fx-border-color: #cbd5e1; -fx-border-radius: 8; -fx-padding: 5;"/>
+                            <Button text="Eliminar Selección" onAction="#eliminarAsignatura" maxWidth="Infinity" style="-fx-background-color: white; -fx-text-fill: #ef4444; -fx-border-color: #fca5a5; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 8; -fx-cursor: hand;"/>
+                        </VBox>
+
+                    </VBox>
+                </ScrollPane>
+            </left>
+
+            <!-- ZONA CENTRAL: EL TEMPORIZADOR Y AJUSTES -->
             <center>
-                <VBox alignment="CENTER" spacing="30.0" maxWidth="900">
-                    <padding><Insets bottom="30" left="30" right="30" top="30"/></padding>
+                <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-border-color: transparent;">
+                    <VBox spacing="25" style="-fx-padding: 40;">
 
-                    <VBox fx:id="tarjetaTemporizador" alignment="CENTER" spacing="10" style="-fx-padding: 40; -fx-background-color: #eff6ff; -fx-effect: dropshadow(three-pass-box, rgba(59,130,246,0.3), 20, 0, 0, 10); -fx-background-radius: 20; -fx-border-color: #93c5fd; -fx-border-width: 2; -fx-border-radius: 18;">
-                        <Label fx:id="lblModo" text="Modo Enfoque" style="-fx-font-size: 26px; -fx-text-fill: #2563eb; -fx-font-weight: bold;"/>
-                        <Label fx:id="lblAsignaturaActiva" text="Registrando: Estudio Libre" style="-fx-font-size: 16px; -fx-text-fill: #3b82f6;"/>
-                        <Label fx:id="lblTiempo" text="25:00" style="-fx-font-size: 150px; -fx-font-weight: bold; -fx-text-fill: #1e3a8a;"/>
-                        <ProgressBar fx:id="progresoSesion" progress="1.0" maxWidth="550" prefHeight="18" style="-fx-accent: #3b82f6; -fx-control-inner-background: #dbeafe;"/>
-                        <Button fx:id="btnOmitir" text="Saltar Descanso ⏭" onAction="#omitirDescanso" visible="false" managed="false" style="-fx-background-color: #10b981; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 20; -fx-padding: 8 20; -fx-cursor: hand;"/>
+                        <Label text="Sesión de Concentración" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #0f172a;"/>
+
+                        <!-- Tarjetas asimétricas para romper el "diseño IA" cuadrado aburrido -->
+                        <HBox spacing="25">
+
+                            <!-- TARJETA DEL RELOJ -->
+                            <!-- Le metí un rollo "Dark Mode" para que resalte un montón sobre el fondo claro -->
+                            <VBox fx:id="tarjetaTemporizador" alignment="CENTER" spacing="20" HBox.hgrow="ALWAYS" style="-fx-background-color: #1e293b; -fx-padding: 40; -fx-background-radius: 16; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.15), 15, 0, 0, 8);">
+
+                                <HBox alignment="CENTER_LEFT">
+                                    <Label fx:id="lblModo" text="Período de concentración" style="-fx-text-fill: #94a3b8; -fx-font-size: 16px; -fx-font-weight: bold;"/>
+                                    <Region HBox.hgrow="ALWAYS"/>
+                                    <Label fx:id="lblAsignaturaActiva" text="Estudio Libre" style="-fx-text-fill: #cbd5e1; -fx-background-color: #334155; -fx-padding: 6 12; -fx-background-radius: 8; -fx-font-size: 13px;"/>
+                                </HBox>
+
+                                <VBox alignment="CENTER" spacing="15" style="-fx-padding: 20 0;">
+                                    <Label fx:id="lblTiempo" text="25:00" style="-fx-font-size: 110px; -fx-font-weight: bold; -fx-text-fill: white; -fx-font-family: 'Segoe UI', Arial, sans-serif;"/>
+                                    <ProgressBar fx:id="progresoSesion" progress="1.0" maxWidth="450" prefHeight="12" style="-fx-accent: #3b82f6; -fx-control-inner-background: #334155; -fx-background-radius: 10;"/>
+                                </VBox>
+
+                                <!-- Botonera de control (Play, Stop, Skip) -->
+                                <HBox alignment="CENTER" spacing="20">
+                                    <Button fx:id="btnAccion" text="▶ Iniciar" onAction="#gestionarTemporizador" style="-fx-background-color: white; -fx-text-fill: #0f172a; -fx-font-weight: bold; -fx-font-size: 16px; -fx-padding: 12 40; -fx-background-radius: 30; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(255,255,255,0.2), 10, 0, 0, 0);"/>
+                                    <Button fx:id="btnAbandonar" text="⏹ Detener" onAction="#abandonarSesion" visible="false" managed="false" style="-fx-background-color: #ef4444; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 16px; -fx-padding: 12 25; -fx-background-radius: 30; -fx-cursor: hand;"/>
+                                    <Button fx:id="btnOmitir" text="⏭ Omitir" onAction="#omitirDescanso" visible="false" managed="false" style="-fx-background-color: #10b981; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 16px; -fx-padding: 12 25; -fx-background-radius: 30; -fx-cursor: hand;"/>
+                                </HBox>
+                            </VBox>
+
+                            <!-- TARJETA LATERAL: RACHA Y OBJETIVOS -->
+                            <!-- Similar al widget de Windows 11 o el dashboard de Xbox -->
+                            <VBox spacing="20" prefWidth="320" style="-fx-background-color: white; -fx-padding: 30; -fx-background-radius: 16; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 15, 0, 0, 5); -fx-border-color: #e2e8f0; -fx-border-radius: 16;">
+                                <Label text="Progreso Diario" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #0f172a;"/>
+
+                                <VBox alignment="CENTER" spacing="10" VBox.vgrow="ALWAYS">
+                                    <StackPane>
+                                        <ProgressBar fx:id="progresoDiario" progress="0.0" prefWidth="220" prefHeight="25" style="-fx-accent: #10b981; -fx-control-inner-background: #f1f5f9; -fx-background-radius: 15;"/>
+                                        <Label fx:id="lblMetaTexto" text="0 / 60 min" style="-fx-font-weight: bold; -fx-text-fill: #0f172a;"/>
+                                    </StackPane>
+                                    <Label text="Objetivo de hoy" style="-fx-text-fill: #64748b; -fx-font-size: 13px;"/>
+                                </VBox>
+
+                                <Separator/>
+
+                                <HBox alignment="CENTER">
+                                    <VBox alignment="CENTER" spacing="5">
+                                        <Label text="🔥 Racha de Estudio" style="-fx-text-fill: #64748b; -fx-font-weight: bold;"/>
+                                        <Label fx:id="lblRachaEstudio" text="0 días" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #f59e0b;"/>
+                                    </VBox>
+                                </HBox>
+                            </VBox>
+                        </HBox>
+
+                        <!-- TARJETA DE CONFIGURACIÓN RÁPIDA -->
+                        <HBox alignment="CENTER_LEFT" spacing="25" style="-fx-background-color: white; -fx-padding: 25 30; -fx-background-radius: 16; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.04), 10, 0, 0, 4); -fx-border-color: #e2e8f0; -fx-border-radius: 16;">
+                            <Label text="⚙️ Ajustes:" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #334155;"/>
+                            <VBox spacing="5"><Label text="Estudio (min)" style="-fx-font-size: 12px; -fx-text-fill: #64748b; -fx-font-weight: bold;"/><Spinner fx:id="spinEstudio" prefWidth="100" editable="true" style="-fx-background-radius: 6;"/></VBox>
+                            <VBox spacing="5"><Label text="Descanso (min)" style="-fx-font-size: 12px; -fx-text-fill: #64748b; -fx-font-weight: bold;"/><Spinner fx:id="spinDescanso" prefWidth="100" editable="true" style="-fx-background-radius: 6;"/></VBox>
+                            <VBox spacing="5"><Label text="Meta (min)" style="-fx-font-size: 12px; -fx-text-fill: #64748b; -fx-font-weight: bold;"/><Spinner fx:id="spinMeta" prefWidth="100" editable="true" style="-fx-background-radius: 6;"/></VBox>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Button text="Aplicar Tiempos" onAction="#aplicarConfiguracion" style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 10 20; -fx-cursor: hand;"/>
+                        </HBox>
+
                     </VBox>
-
-                    <HBox alignment="CENTER" spacing="30" style="-fx-padding: 20 40; -fx-background-color: white; -fx-background-radius: 15; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.04), 10, 0, 0, 4); -fx-border-color: #e2e8f0; -fx-border-radius: 13;">
-                        <VBox alignment="CENTER" spacing="5"><Label text="Estudio (min)" style="-fx-text-fill: #64748b; -fx-font-weight: bold;"/><Spinner fx:id="spinEstudio" prefWidth="110" editable="true"/></VBox>
-                        <VBox alignment="CENTER" spacing="5"><Label text="Descanso (min)" style="-fx-text-fill: #64748b; -fx-font-weight: bold;"/><Spinner fx:id="spinDescanso" prefWidth="110" editable="true"/></VBox>
-                        <VBox alignment="CENTER" spacing="5"><Label text="Meta (min)" style="-fx-text-fill: #64748b; -fx-font-weight: bold;"/><Spinner fx:id="spinMeta" prefWidth="110" editable="true"/></VBox>
-                        <Button text="Aplicar" onAction="#aplicarConfiguracion" style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8;" styleClass="accent" translateY="10"/>
-                    </HBox>
-
-                    <VBox alignment="CENTER" spacing="10" maxWidth="550">
-                        <HBox alignment="CENTER_LEFT"><Label text="Progreso Diario" styleClass="title-4" style="-fx-text-fill: #334155;"/><Region HBox.hgrow="ALWAYS"/><Label fx:id="lblMetaTexto" text="0 / 60 min" style="-fx-text-fill: #64748b; -fx-font-weight: bold;"/></HBox>
-                        <ProgressBar fx:id="progresoDiario" progress="0.0" maxWidth="Infinity" prefHeight="25" style="-fx-accent: #22c55e;"/>
-                    </VBox>
-
-                    <HBox alignment="CENTER" spacing="25">
-                        <Button fx:id="btnAccion" text="Iniciar Estudio" onAction="#gestionarTemporizador" styleClass="success" style="-fx-font-size: 22px; -fx-padding: 15 50; -fx-background-radius: 30; -fx-font-weight: bold; -fx-effect: dropshadow(three-pass-box, rgba(34,197,94,0.4), 10, 0, 0, 4);"/>
-                        <Button fx:id="btnAbandonar" text="Abandonar" onAction="#abandonarSesion" visible="false" managed="false" styleClass="danger" style="-fx-font-size: 16px; -fx-padding: 15 25; -fx-background-radius: 20;"/>
-                    </HBox>
-                </VBox>
+                </ScrollPane>
             </center>
-            <right>
-                <VBox spacing="20" style="-fx-padding: 35; -fx-background-color: white; -fx-border-color: #e2e8f0; -fx-border-width: 0 0 0 1;" prefWidth="380" minWidth="320">
-                    <Label text="Tus Asignaturas" styleClass="title-2" style="-fx-text-fill: #0f172a;"/>
-                    <HBox spacing="10"><TextField fx:id="txtNuevaAsignatura" promptText="Nueva materia..." HBox.hgrow="ALWAYS" style="-fx-background-radius: 6;"/><Button text="+" onAction="#agregarAsignatura" styleClass="accent" style="-fx-background-radius: 6;"/></HBox>
-                    <Label text="Selecciona para registrar tiempo:" style="-fx-text-fill: #64748b;"/>
-                    <ListView fx:id="listaAsignaturas" VBox.vgrow="ALWAYS" style="-fx-background-color: transparent; -fx-border-color: #cbd5e1; -fx-border-radius: 8; -fx-padding: 5; -fx-font-size: 14px;"/>
-                    <Button text="Eliminar Seleccionada" onAction="#eliminarAsignatura" styleClass="danger, outlined" maxWidth="Infinity" style="-fx-border-radius: 6;"/>
-                </VBox>
-            </right>
         </BorderPane>
     </Tab>
 
+    <!-- ======================================================= -->
+    <!-- PESTAÑA 2: EL MINIJUEGO DEL JARDÍN                      -->
+    <!-- ======================================================= -->
     <Tab text="Mi Jardín">
         <BorderPane style="-fx-background-color: #f0fdf4;">
 
+            <!-- EL HUERTO (Generado dinámicamente) -->
             <center>
                 <VBox alignment="CENTER" spacing="20">
-                    <Label text="Tu Invernadero" styleClass="title-2" style="-fx-text-fill: #166534;"/>
-                    <Label text="Haz clic en una parcela para plantar una semilla de tu inventario." styleClass="text-muted"/>
-
-                    <GridPane fx:id="gridJardin" alignment="CENTER" hgap="15" vgap="15" style="-fx-padding: 20; -fx-background-color: #dcfce7; -fx-background-radius: 15; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5);" maxWidth="600">
-                        <Button text="+" GridPane.columnIndex="0" GridPane.rowIndex="0" prefWidth="120" prefHeight="120" style="-fx-background-color: #8b4513; -fx-text-fill: #d2b48c; -fx-font-size: 30px; -fx-background-radius: 10; -fx-cursor: hand;"/>
-                        <Button text="🌱" GridPane.columnIndex="1" GridPane.rowIndex="0" prefWidth="120" prefHeight="120" style="-fx-background-color: #8b4513; -fx-font-size: 50px; -fx-background-radius: 10;"/>
-                        <Button text="+" GridPane.columnIndex="2" GridPane.rowIndex="0" prefWidth="120" prefHeight="120" style="-fx-background-color: #8b4513; -fx-text-fill: #d2b48c; -fx-font-size: 30px; -fx-background-radius: 10; -fx-cursor: hand;"/>
-                        <Button text="🌳" GridPane.columnIndex="0" GridPane.rowIndex="1" prefWidth="120" prefHeight="120" style="-fx-background-color: #8b4513; -fx-font-size: 60px; -fx-background-radius: 10;"/>
-                        <Button text="+" GridPane.columnIndex="1" GridPane.rowIndex="1" prefWidth="120" prefHeight="120" style="-fx-background-color: #8b4513; -fx-text-fill: #d2b48c; -fx-font-size: 30px; -fx-background-radius: 10; -fx-cursor: hand;"/>
-                        <Button text="+" GridPane.columnIndex="2" GridPane.rowIndex="1" prefWidth="120" prefHeight="120" style="-fx-background-color: #8b4513; -fx-text-fill: #d2b48c; -fx-font-size: 30px; -fx-background-radius: 10; -fx-cursor: hand;"/>
+                    <Label text="Tu Invernadero" styleClass="title-1" style="-fx-text-fill: #166534;"/>
+                    <Label text="Planta semillas, usa agua para regarlas o la pala para limpiar la maceta." styleClass="text-muted"/>
+                    <!-- Aquí el controlador inyecta las 9 macetas (los Buttons) en este GridPane vacío -->
+                    <GridPane fx:id="gridJardin" alignment="CENTER" hgap="15" vgap="15" style="-fx-padding: 30; -fx-background-color: #dcfce7; -fx-background-radius: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5);" maxWidth="600">
                     </GridPane>
                 </VBox>
             </center>
 
+            <!-- LA TIENDA Y LA MOCHILA -->
             <right>
-                <VBox spacing="20" style="-fx-background-color: white; -fx-padding: 30; -fx-border-color: #bbf7d0; -fx-border-width: 0 0 0 2;" prefWidth="350">
+                <VBox spacing="20" style="-fx-background-color: white; -fx-padding: 30; -fx-border-color: #bbf7d0; -fx-border-width: 0 0 0 2;" prefWidth="420">
 
-                    <HBox alignment="CENTER" style="-fx-background-color: #fef3c7; -fx-padding: 15; -fx-background-radius: 10;">
-                        <Label text="Tus Monedas: " styleClass="title-4" style="-fx-text-fill: #92400e;"/>
-                        <Label fx:id="lblMonedas" text="0 XP" styleClass="title-3" style="-fx-text-fill: #d97706; -fx-font-weight: bold;"/>
+                    <!-- Minipanel de economía rápida -->
+                    <HBox alignment="CENTER" spacing="15" style="-fx-background-color: #f8fafc; -fx-padding: 15; -fx-border-color: #e2e8f0; -fx-border-radius: 10; -fx-background-radius: 10;">
+                        <VBox alignment="CENTER"><Label text="Nivel"/><Label fx:id="lblNivelTienda" text="1 🌟" style="-fx-font-weight: bold; -fx-text-fill: #2563eb;"/></VBox>
+                        <Separator orientation="VERTICAL"/>
+                        <VBox alignment="CENTER"><Label text="Oro"/><Label fx:id="lblMonedas" text="0" style="-fx-font-weight: bold; -fx-text-fill: #d97706;"/></VBox>
+                        <Separator orientation="VERTICAL"/>
+                        <VBox alignment="CENTER"><Label text="Agua"/><Label fx:id="lblGotas" text="0" style="-fx-font-weight: bold; -fx-text-fill: #0ea5e9;"/></VBox>
                     </HBox>
 
                     <Label text="🏪 Tienda Botánica" styleClass="title-3" style="-fx-text-fill: #166534;"/>
-                    <VBox spacing="10">
-                        <HBox alignment="CENTER_LEFT" spacing="10" style="-fx-padding: 10; -fx-border-color: #e2e8f0; -fx-border-radius: 5;">
-                            <Label text="🌵 Semilla Cactus" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
-                            <Button text="50 XP" styleClass="success, small"/>
-                        </HBox>
-                        <HBox alignment="CENTER_LEFT" spacing="10" style="-fx-padding: 10; -fx-border-color: #e2e8f0; -fx-border-radius: 5;">
-                            <Label text="🌳 Semilla Bonsái" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
-                            <Button text="200 XP" styleClass="success, small"/>
-                        </HBox>
-                        <HBox alignment="CENTER_LEFT" spacing="10" style="-fx-padding: 10; -fx-border-color: #e2e8f0; -fx-border-radius: 5;">
-                            <Label text="🌻 Semilla Girasol" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
-                            <Button text="500 XP" styleClass="success, small"/>
-                        </HBox>
-                    </VBox>
+
+                    <!-- Catálogo de la tienda. Los botones con "ℹ️" abren los popups customizados para ver qué hace cada cosa -->
+                    <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-border-color: transparent;">
+                        <VBox spacing="10" style="-fx-background-color: white;">
+                            <HBox alignment="CENTER_LEFT" spacing="10" styleClass="item-tienda">
+                                <Label text="⛏️ Pala" HBox.hgrow="ALWAYS" maxWidth="Infinity" style="-fx-font-weight: bold; -fx-text-fill: #475569;"/>
+                                <Button text="ℹ️" onAction="#infoPala" style="-fx-background-color: transparent; -fx-cursor: hand;"/>
+                                <Button fx:id="btnPala" text="20 Oro" onAction="#comprarPala" styleClass="btn-comprar"/>
+                            </HBox>
+                            <HBox alignment="CENTER_LEFT" spacing="10" styleClass="item-tienda">
+                                <Label text="🧪 Fertilizante" HBox.hgrow="ALWAYS" maxWidth="Infinity" style="-fx-font-weight: bold; -fx-text-fill: #10b981;"/>
+                                <Button text="ℹ️" onAction="#infoFertilizante" style="-fx-background-color: transparent; -fx-cursor: hand;"/>
+                                <Button fx:id="btnFertilizante" text="100 Oro" onAction="#comprarFertilizante" styleClass="btn-comprar"/>
+                            </HBox>
+                            <HBox alignment="CENTER_LEFT" spacing="10" styleClass="item-tienda">
+                                <Label text="☂️ Toldo" HBox.hgrow="ALWAYS" maxWidth="Infinity" style="-fx-font-weight: bold; -fx-text-fill: #3b82f6;"/>
+                                <Button text="ℹ️" onAction="#infoToldo" style="-fx-background-color: transparent; -fx-cursor: hand;"/>
+                                <Button fx:id="btnToldo" text="150 Oro" onAction="#comprarToldo" styleClass="btn-comprar"/>
+                            </HBox>
+                            <HBox alignment="CENTER_LEFT" spacing="10" styleClass="item-tienda">
+                                <Label text="🌵 Cactus (Común)" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+                                <Button text="ℹ️" onAction="#infoCactus" style="-fx-background-color: transparent; -fx-cursor: hand;"/>
+                                <Button fx:id="btnCactus" text="50 Oro" onAction="#comprarCactus" styleClass="btn-comprar"/>
+                            </HBox>
+                            <HBox alignment="CENTER_LEFT" spacing="10" styleClass="item-tienda">
+                                <Label text="🌳 Bonsái (Raro - Nvl 3)" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+                                <Button text="ℹ️" onAction="#infoBonsai" style="-fx-background-color: transparent; -fx-cursor: hand;"/>
+                                <Button fx:id="btnBonsai" text="200 Oro" onAction="#comprarBonsai" styleClass="btn-comprar"/>
+                            </HBox>
+                            <HBox alignment="CENTER_LEFT" spacing="10" styleClass="item-tienda">
+                                <Label text="🌻 Girasol (Épico - Nvl 5)" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+                                <Button text="ℹ️" onAction="#infoGirasol" style="-fx-background-color: transparent; -fx-cursor: hand;"/>
+                                <Button fx:id="btnGirasol" text="500 Oro" onAction="#comprarGirasol" styleClass="btn-comprar"/>
+                            </HBox>
+                            <HBox alignment="CENTER_LEFT" spacing="10" styleClass="item-tienda">
+                                <Label text="🌲 Pino (Legendario - Nvl 10)" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+                                <Button text="ℹ️" onAction="#infoPino" style="-fx-background-color: transparent; -fx-cursor: hand;"/>
+                                <Button fx:id="btnPino" text="1000 Oro" onAction="#comprarPino" styleClass="btn-comprar"/>
+                            </HBox>
+                        </VBox>
+                    </ScrollPane>
 
                     <Separator/>
-
                     <Label text="🎒 Tu Mochila" styleClass="title-3" style="-fx-text-fill: #166534;"/>
-                    <ListView fx:id="listaInventario" VBox.vgrow="ALWAYS" style="-fx-background-color: transparent;"/>
+                    <ListView fx:id="listaInventario" VBox.vgrow="ALWAYS" prefHeight="150" style="-fx-background-color: transparent;"/>
                 </VBox>
             </right>
-
         </BorderPane>
     </Tab>
 
-    <Tab fx:id="tabEstadisticas" text="Estadísticas">
-        <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;">
-            <VBox alignment="TOP_CENTER" spacing="35" style="-fx-padding: 40; -fx-background-color: #f8fafc;">
-                <HBox spacing="30" alignment="CENTER" maxWidth="1000">
-                    <VBox alignment="CENTER" HBox.hgrow="ALWAYS" style="-fx-background-color: white; -fx-background-radius: 15; -fx-padding: 30; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.03), 10, 0, 0, 4);"><Label text="Hoy" style="-fx-text-fill: #64748b; -fx-font-weight: bold;"/><Label fx:id="lblHoy" text="0h 0m" style="-fx-font-size: 46px; -fx-font-weight: bold; -fx-text-fill: #0969da;"/></VBox>
-                    <VBox alignment="CENTER" HBox.hgrow="ALWAYS" style="-fx-background-color: white; -fx-background-radius: 15; -fx-padding: 30; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.03), 10, 0, 0, 4);"><Label text="Últimos 7 Días" style="-fx-text-fill: #64748b; -fx-font-weight: bold;"/><Label fx:id="lblSemana" text="0h 0m" style="-fx-font-size: 46px; -fx-font-weight: bold; -fx-text-fill: #10b981;"/></VBox>
-                    <VBox alignment="CENTER" HBox.hgrow="ALWAYS" style="-fx-background-color: white; -fx-background-radius: 15; -fx-padding: 30; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.03), 10, 0, 0, 4);"><Label text="Total XP" style="-fx-text-fill: #64748b; -fx-font-weight: bold;"/><Label fx:id="lblTotalXP" text="0 XP" style="-fx-font-size: 46px; -fx-font-weight: bold; -fx-text-fill: #0f172a;"/></VBox>
-                </HBox>
-                <HBox spacing="30" alignment="CENTER" maxWidth="1000">
-                    <VBox HBox.hgrow="ALWAYS" style="-fx-background-color: white; -fx-padding: 35; -fx-background-radius: 15; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.03), 10, 0, 0, 4);"><Label text="Actividad Diaria" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #334155;"/><BarChart fx:id="chartSemana" prefHeight="400" legendVisible="false" animated="false"><xAxis><CategoryAxis label="Fecha"/></xAxis><yAxis><NumberAxis label="Minutos"/></yAxis></BarChart></VBox>
-                    <VBox prefWidth="450" style="-fx-background-color: white; -fx-padding: 35; -fx-background-radius: 15; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.03), 10, 0, 0, 4);"><Label text="Distribución de Materias" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #334155;"/><PieChart fx:id="chartAsignaturas" prefHeight="400" labelsVisible="false" legendSide="BOTTOM" animated="false"/></VBox>
-                </HBox>
-            </VBox>
-        </ScrollPane>
+    <!-- ======================================================= -->
+    <!-- PESTAÑA 3: ESTADÍSTICAS Y CAMINO DE TROFEOS             -->
+    <!-- ======================================================= -->
+    <!-- El diseño nuevo. Metí las ligas a la izquierda y los KPIs a la derecha para que no parezca un popup feo. -->
+    <Tab fx:id="tabEstadisticas" text="Perfil y Estadísticas">
+        <BorderPane style="-fx-background-color: #f1f5f9;">
+
+            <left>
+                <VBox spacing="25" style="-fx-background-color: white; -fx-padding: 30; -fx-border-color: #e2e8f0; -fx-border-width: 0 1 0 0;" prefWidth="350">
+                    <VBox alignment="CENTER" spacing="8" style="-fx-background-color: #f8fafc; -fx-padding: 25; -fx-background-radius: 15; -fx-border-color: #e2e8f0; -fx-border-radius: 15;">
+                        <Label text="🧑‍🎓" style="-fx-font-size: 55px; -fx-background-color: #eff6ff; -fx-padding: 15; -fx-background-radius: 50;"/>
+                        <Label fx:id="lblStatsNombre" text="Usuario" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #0f172a;"/>
+                        <Label fx:id="lblStatsRango" text="Cargando Rango..." style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #3b82f6;"/>
+                    </VBox>
+                    <Separator/>
+
+                    <!-- Lógica generada en el controlador (pintarLigasEnEstadisticas) -->
+                    <Label text="🏆 Camino de Sabiduría" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
+                    <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-border-color: transparent;" VBox.vgrow="ALWAYS">
+                        <VBox fx:id="boxLigas" spacing="8" style="-fx-background-color: transparent;"/>
+                    </ScrollPane>
+                </VBox>
+            </left>
+
+            <!-- Dashboard de KPIs y gráficas -->
+            <center>
+                <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-border-color: transparent;">
+                    <VBox spacing="30" style="-fx-padding: 40;">
+                        <Label text="Resumen de Rendimiento" style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #0f172a;"/>
+
+                        <!-- Grid de 4 columnas para que la data quede súper limpia -->
+                        <GridPane hgap="20" vgap="20">
+                            <columnConstraints>
+                                <ColumnConstraints percentWidth="25"/>
+                                <ColumnConstraints percentWidth="25"/>
+                                <ColumnConstraints percentWidth="25"/>
+                                <ColumnConstraints percentWidth="25"/>
+                            </columnConstraints>
+                            <rowConstraints><RowConstraints prefHeight="110"/></rowConstraints>
+
+                            <VBox GridPane.columnIndex="0" alignment="CENTER_LEFT" style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 12; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.03), 10, 0, 0, 4); -fx-border-color: #e2e8f0; -fx-border-radius: 12;">
+                                <Label text="Tiempo Hoy" style="-fx-text-fill: #64748b; -fx-font-size: 14px; -fx-font-weight: bold;"/>
+                                <Label fx:id="lblHoy" text="0h 0m" style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #0f172a;"/>
+                            </VBox>
+                            <VBox GridPane.columnIndex="1" alignment="CENTER_LEFT" style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 12; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.03), 10, 0, 0, 4); -fx-border-color: #e2e8f0; -fx-border-radius: 12;">
+                                <Label text="Últimos 7 Días" style="-fx-text-fill: #64748b; -fx-font-size: 14px; -fx-font-weight: bold;"/>
+                                <Label fx:id="lblSemana" text="0h 0m" style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #0f172a;"/>
+                            </VBox>
+                            <VBox GridPane.columnIndex="2" alignment="CENTER_LEFT" style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 12; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.03), 10, 0, 0, 4); -fx-border-color: #e2e8f0; -fx-border-radius: 12;">
+                                <Label text="Plantas Vivas" style="-fx-text-fill: #64748b; -fx-font-size: 14px; -fx-font-weight: bold;"/>
+                                <Label fx:id="lblPlantasVivas" text="0" style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #10b981;"/>
+                            </VBox>
+                            <VBox GridPane.columnIndex="3" alignment="CENTER_LEFT" style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 12; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.03), 10, 0, 0, 4); -fx-border-color: #e2e8f0; -fx-border-radius: 12;">
+                                <Label text="Oro Histórico" style="-fx-text-fill: #64748b; -fx-font-size: 14px; -fx-font-weight: bold;"/>
+                                <Label fx:id="lblOroTotalStats" text="0" style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #f59e0b;"/>
+                            </VBox>
+                        </GridPane>
+
+                        <HBox spacing="20">
+                            <!-- Los gráficos (Se cargan desde Mongo) -->
+                            <VBox HBox.hgrow="ALWAYS" style="-fx-background-color: white; -fx-padding: 25; -fx-background-radius: 12; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.03), 10, 0, 0, 4); -fx-border-color: #e2e8f0; -fx-border-radius: 12;">
+                                <Label text="Actividad Semanal" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
+                                <BarChart fx:id="chartSemana" prefHeight="350" legendVisible="false" animated="false"><xAxis><CategoryAxis/></xAxis><yAxis><NumberAxis/></yAxis></BarChart>
+                            </VBox>
+                            <VBox prefWidth="400" style="-fx-background-color: white; -fx-padding: 25; -fx-background-radius: 12; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.03), 10, 0, 0, 4); -fx-border-color: #e2e8f0; -fx-border-radius: 12;">
+                                <Label text="Distribución de Materias" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
+                                <PieChart fx:id="chartAsignaturas" prefHeight="350" labelsVisible="false" legendSide="BOTTOM" animated="false"/>
+                            </VBox>
+                        </HBox>
+                    </VBox>
+                </ScrollPane>
+            </center>
+        </BorderPane>
     </Tab>
 </TabPane>
