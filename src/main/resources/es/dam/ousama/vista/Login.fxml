@@ -1,39 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- Imports de JavaFX. Estos los suele meter el IDE o SceneBuilder automáticamente, mejor no tocarlos mucho -->
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.HBox?>
+<?import java.net.URL?>
 
-<!--
-  Contenedor principal de la vista de Login.
-  Lo centramos todo a fuego (alignment="CENTER") para que si el profe maximiza la ventana, no se descuadre y se quede flotando en medio.
--->
-<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="es.dam.ousama.controlador.LoginControlador">
+<VBox alignment="CENTER" spacing="20.0" styleClass="login-fondo" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="es.dam.ousama.controlador.LoginControlador">
 
-    <!-- Título y subtítulo pillando las clases del CSS global -->
-    <Label text="StudyBuddy" styleClass="title-1"/>
-    <Label text="Gestiona tu tiempo y haz crecer tu jardín" styleClass="text-muted"/>
+    <stylesheets>
+        <URL value="@styles.css" />
+    </stylesheets>
 
-    <!--
-      Caja para los inputs del usuario.
-      Le meto un maxWidth de 280 para que los textfields no se estiren como un chicle de lado a lado de la pantalla.
-    -->
+    <Label text="StudyBuddy" style="-fx-text-fill: white; -fx-font-size: 36px; -fx-font-weight: bold;"/>
+    <Label text="Gestiona tu tiempo y haz crecer tu jardín" style="-fx-text-fill: #cbd5e1; -fx-font-size: 15px;"/>
+
     <VBox alignment="CENTER" spacing="15.0" maxWidth="280">
         <TextField fx:id="txtUsuario" promptText="Usuario" styleClass="elevated-1"/>
         <PasswordField fx:id="txtPass" promptText="Contraseña" styleClass="elevated-1"/>
     </VBox>
 
-    <!-- Botonera. El de entrar resalta más (accent) y el de registro lo dejamos secundario (outlined) -->
     <HBox alignment="CENTER" spacing="15.0">
         <Button text="Iniciar Sesión" onAction="#iniciarSesion" styleClass="accent, large"/>
         <Button text="Registrarse" onAction="#registrarUsuario" styleClass="outlined, large"/>
     </HBox>
 
-    <!-- Label oculto por defecto para escupir los errores (contraseña mal, etc). wrapText=true por si el texto es muy largo que salte de línea y no se corte -->
     <Label fx:id="lblError" styleClass="danger" wrapText="true" textAlignment="CENTER" maxWidth="300"/>
 
 </VBox>

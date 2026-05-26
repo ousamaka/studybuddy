@@ -133,7 +133,14 @@ public class Planta {
     public void setTipo(String tipo) { this.tipo = tipo; }
     public int getFase() { return fase; }
     public void setFase(int fase) { this.fase = fase; }
-    public int getHidratacion() { return hidratacion; }
+
+    public int getHidratacion() {
+        String estado = getEstadoSupervivencia();
+        if (estado.equals("Marchito")) return 0;
+        if (estado.equals("Sediento")) return 50;
+        return hidratacion;
+    }
+
     public void setHidratacion(int hidratacion) { this.hidratacion = hidratacion; }
     public LocalDate getUltimaVezRegada() { return ultimaVezRegada; }
     public void setUltimaVezRegada(LocalDate ultimaVezRegada) { this.ultimaVezRegada = ultimaVezRegada; }

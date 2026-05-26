@@ -679,7 +679,7 @@ public class DashboardControlador {
                 btnAccionPrimaria.setStyle("-fx-background-color: #dc2626; -fx-text-fill: white; -fx-font-weight: bold; -fx-pref-width: 250; -fx-padding: 10; -fx-background-radius: 8; -fx-cursor: hand;");
             } else {
                 if (p.getFase() < 2) btnAccionPrimaria.setText("Regar crecimiento (" + costeAguaCalculado + " 💧)");
-                else if (p.getHidratacion() < 100) btnAccionPrimaria.setText("Mantenimiento (" + costeAguaCalculado + " 💧)");
+                else if (p.getHidratacion() < 100 || p.getEstadoSupervivencia().equals("Sediento")) btnAccionPrimaria.setText("Mantenimiento (" + costeAguaCalculado + " 💧)");
                 else btnAccionPrimaria.setText("La planta no tiene sed 🌿");
             }
 
@@ -727,14 +727,18 @@ public class DashboardControlador {
                     if (btnAccionPrimaria.getText().contains("Hospital")) {
                         int costeHosp = Integer.parseInt(btnAccionPrimaria.getText().replaceAll("[^0-9]", ""));
                         if (estudiante.gastarAgua(costeHosp)) {
-                            p.setFase(1);
-                            p.regar(costeHosp);
+                            // --- FIX HOSPITAL BOTÁNICO (TFG) ---
+                            p.setFase(1); // Vuelve a ser un brote sano
+                            p.setHidratacion(100); // Llenamos la vida al 100%
+                            p.setUltimaVezRegada(LocalDate.now()); // Reseteamos el reloj de la sed a hoy
+                            p.setFinToldoProtector(null); // Limpiamos escudos viejos
+                            // -----------------------------------
                             refrescarTablero();
                             actualizarUI();
                             sincronizarConNube();
-                            Platform.runLater(() -> mostrarMensajeJuego("Milagro", "Planta revivida con éxito."));
+                            Platform.runLater(() -> mostrarMensajeJuego("Milagro Botánico 🌿", "Tu planta ha sido revivida con éxito y vuelve a ser un brote sano."));
                         } else {
-                            Platform.runLater(() -> mostrarMensajeJuego("Error", "Necesitas " + costeHosp + " de agua para el hospital."));
+                            Platform.runLater(() -> mostrarMensajeJuego("Gotas Insuficientes 💧", "Necesitas " + costeHosp + " gotas de agua para el hospital."));
                         }
                     } else if (btnAccionPrimaria.getText().contains("Regar") || btnAccionPrimaria.getText().contains("Mantenimiento")) {
                         if (estudiante.gastarAgua(fCosteAguaFinal)) {

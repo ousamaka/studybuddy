@@ -103,7 +103,23 @@
     -fx-effect: innershadow(three-pass-box, rgba(220, 38, 38, 0.4), 15, 0, 0, 0);
 }
 
-/* Aviso de que está muriendo y tienes que clicar para meterla de urgencias en el hospital */
+/*收藏 Aviso de que está muriendo y tienes que clicar para meterla de urgencias en el hospital */
 .parcela-marchita:hover {
     -fx-effect: dropshadow(three-pass-box, rgba(220, 38, 38, 0.8), 20, 0, 0, 0);
+}
+
+/* =======================================================
+   PANTALLA DE LOGIN (Mejora visual para la entrega)
+   ======================================================= */
+
+.login-fondo {
+    -fx-background-color: linear-gradient(to bottom right, #0f172a, #1e1b4b);
+}
+
+/* Sombra suave para los campos de entrada de texto, evitando que queden planos sobre el fondo */
+.elevated-1 {
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.08), 8, 0, 0, 3);
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-padding: 8;
 }
