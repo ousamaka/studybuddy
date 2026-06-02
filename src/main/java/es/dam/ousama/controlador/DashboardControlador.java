@@ -846,9 +846,12 @@ public class DashboardControlador {
             new Thread(() -> {
                 UsuarioDAO d = new UsuarioDAO();
                 d.registrarSesion(estudiante.getNombre(), asignaturaActual, minutos);
-                d.actualizarXP(estudiante.getNombre(), estudiante.getPuntosCrecimiento());
+                // Aquí es donde solucionamos la fuga de datos al cerrar el Pomodoro
+                d.guardarProgresoJardin(estudiante);
                 d.cerrarConexion();
             }).start();
+        } else {
+            sincronizarConNube();
         }
     }
 
@@ -892,7 +895,7 @@ public class DashboardControlador {
     }
 
     private void configurarReloj() {
-        // El corazón del temporizador (Pomodoro)
+        // El motor del reloj
         timeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
             tiempoRestante--;
 
@@ -902,6 +905,10 @@ public class DashboardControlador {
                 // Solo damos las recompensas cada 60 segundos (1 minuto real)
                 if (segundosEstudiadosSesion % 60 == 0) {
                     estudiante.sumarMinutoEstudio();
+                    // Actualización forzada en memoria para que concuerde con la interfaz visual
+                    estudiante.setPuntosCrecimiento(estudiante.getPuntosCrecimiento() + 1);
+                    estudiante.setGotasAgua(estudiante.getGotasAgua() + 1);
+
                     minutosHoyLocales++;
                     minutosPendientesDeGuardar++;
                     actualizarUIEstadisticasLocales();
@@ -1033,7 +1040,6 @@ public class DashboardControlador {
                 } catch (Exception ex) {}
             }
 
-            // Calculamos métricas extras para las tarjetas de estadísticas
             int plantasVivas = 0;
             int oroHistorico = 0;
             for(Planta p : estudiante.getMiJardinNuevo()) {

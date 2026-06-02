@@ -10,10 +10,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-// Clase para gestionar toda la conexión con MongoDB Atlas
-// Aquí hacemos los inserts, updates y recuperamos los datos del usuario
+// Clase encargada de la persistencia centralizada con MongoDB Atlas.
+// Gestiona inserciones, actualizaciones y recuperación del estado íntegro del ecosistema.
 public class UsuarioDAO {
-    // Cadena de conexión a mi cluster de Mongo
+    // Cadena de conexión al clúster remoto
     private static final String URI = "mongodb+srv://ousamakassimi02_db_user:5FhEo8C1iNZVR3xd@cluster0.xct9wvy.mongodb.net/?appName=Cluster0";
     private MongoClient mongoClient;
     private MongoDatabase database;
@@ -22,31 +22,29 @@ public class UsuarioDAO {
 
     public UsuarioDAO() {
         try {
-            // Nos conectamos a la bd "studybuddy" y pillamos las colecciones que necesitamos
+            // Establecimiento de conexión con la base de datos y obtención de colecciones
             mongoClient = MongoClients.create(URI);
             database = mongoClient.getDatabase("studybuddy");
             usuarios = database.getCollection("usuarios");
             sesiones = database.getCollection("sesiones");
         } catch (Exception e) {
-            // Si esto peta, lo mostramos por consola para enterarnos
             System.err.println("Error conexión: " + e.getMessage());
         }
     }
 
-    // Comprueba credenciales. Si todo ok, nos traemos los datos completos del estudiante
+    // Valida credenciales contra la base de datos devolviendo el perfil hidratado si es exitoso
     public Estudiante login(String u, String p) {
         Document user = usuarios.find(new Document("username", u)).first();
         if (user != null && user.getString("password").equals(p)) return obtenerDatosUsuario(u);
         return null;
     }
 
-    // Este es el método tocho. Recupera todas las stats, el inventario y reconstruye el jardín
+    // Proceso de hidratación de objetos: reconstruye el jardín botánico y el inventario del usuario
     public Estudiante obtenerDatosUsuario(String u) {
         Document user = usuarios.find(new Document("username", u)).first();
         if (user != null) {
             Estudiante e = new Estudiante(u);
 
-            // Cargamos stats básicas, si falta algo le metemos valores por defecto
             e.setPuntosCrecimiento(user.getInteger("xp", 0));
             e.setMonedasXP(user.getInteger("monedas", 0));
             e.setGotasAgua(user.getInteger("gotasAgua", 10));
@@ -55,13 +53,15 @@ public class UsuarioDAO {
             e.setMinutosDescanso(user.getInteger("minDescanso", 5));
             e.setMetaDiariaMinutos(user.getInteger("metaDiaria", 60));
 
-            // Rescatar la mochila de semillas y boosters
+            // Rescatar las fechas de las misiones diarias para que no se reinicien al cerrar la app
+            if (user.containsKey("ultimaFechaMisionMeta")) e.setUltimaFechaMisionMeta(user.getString("ultimaFechaMisionMeta"));
+            if (user.containsKey("ultimaFechaMisionRiego")) e.setUltimaFechaMisionRiego(user.getString("ultimaFechaMisionRiego"));
+
             if (user.containsKey("inventario")) {
                 Document docInv = (Document) user.get("inventario"); java.util.Map<String, Integer> miMochila = new HashMap<>();
                 for (String key : docInv.keySet()) miMochila.put(key, docInv.getInteger(key)); e.setInventarioSemillas(miMochila);
             }
 
-            // Reconstruir las 9 macetas del jardín convirtiendo los Document de BSON a objetos Planta de Java
             Planta[] jardinCargado = new Planta[9];
             if (user.containsKey("miJardinVivo")) {
                 List<Document> docsJardin = user.getList("miJardinVivo", Document.class);
@@ -76,18 +76,16 @@ public class UsuarioDAO {
                         p.setAguaTotalGenerada(d.getInteger("aguaTotal", 0));
                         p.setXpTotalGenerado(d.getInteger("xpTotal", 0));
 
-                        // Fechas (hay que parsearlas a LocalDate porque Mongo guarda Strings)
+                        // Parseo de Strings a LocalDate (formato admitido por Java)
                         if (d.containsKey("fechaPlantacion")) p.setFechaPlantacion(LocalDate.parse(d.getString("fechaPlantacion")));
                         if (d.containsKey("ultimaVezRegada")) p.setUltimaVezRegada(LocalDate.parse(d.getString("ultimaVezRegada")));
                         if (d.containsKey("finToldoProtector")) p.setFinToldoProtector(LocalDate.parse(d.getString("finToldoProtector")));
                         jardinCargado[i] = p;
                     } else {
-                        // Por si acaso hay huecos vacíos o corrompidos
                         jardinCargado[i] = new Planta();
                     }
                 }
             } else {
-                // Si es una cuenta antigua o sin jardín, le metemos 9 macetas vacías
                 for (int i = 0; i < 9; i++) jardinCargado[i] = new Planta();
             }
             e.setMiJardinNuevo(jardinCargado);
@@ -97,19 +95,32 @@ public class UsuarioDAO {
         return null;
     }
 
-    // Crea una cuenta nueva inicializando todo a 0 (excepto el agua que damos 10 de regalo para empezar)
+    // Inicialización estructural segura para nuevos registros
     public boolean registrar(String username, String password) {
-        // Evitar usuarios duplicados
         if (usuarios.find(new Document("username", username)).first() != null) return false;
 
         List<Document> jardinVacio = new ArrayList<>();
         for (int i = 0; i < 9; i++) { Planta p = new Planta(); jardinVacio.add(new Document("tipo", p.getTipo()).append("fase", p.getFase()).append("hidratacion", p.getHidratacion())); }
 
-        Document nuevo = new Document("username", username).append("password", password).append("xp", 0).append("monedas", 0).append("gotasAgua", 10).append("minEstudio", 25).append("minDescanso", 5).append("metaDiaria", 60).append("misAsignaturas", Arrays.asList("Estudio Libre")).append("inventario", new Document()).append("miJardinVivo", jardinVacio).append("ultimaRecoleccion", LocalDate.now().toString());
+        Document nuevo = new Document("username", username)
+                .append("password", password)
+                .append("xp", 0)
+                .append("monedas", 0)
+                .append("gotasAgua", 10)
+                .append("minEstudio", 25)
+                .append("minDescanso", 5)
+                .append("metaDiaria", 60)
+                .append("misAsignaturas", Arrays.asList("Estudio Libre"))
+                .append("inventario", new Document())
+                .append("miJardinVivo", jardinVacio)
+                .append("ultimaRecoleccion", LocalDate.now().toString())
+                .append("ultimaFechaMisionMeta", "")
+                .append("ultimaFechaMisionRiego", "");
+
         usuarios.insertOne(nuevo); return true;
     }
 
-    // Sube a la nube el estado actual de las plantas, oro, agua y mochila
+    // Sube a la nube el estado global del usuario consolidado en un solo documento
     public void guardarProgresoJardin(Estudiante e) {
         try {
             Document docInventario = new Document(); e.getInventarioSemillas().forEach(docInventario::append);
@@ -122,23 +133,33 @@ public class UsuarioDAO {
                 listaJardin.add(d);
             }
 
-            // Machacamos los datos viejos con los nuevos en la BD
-            Document update = new Document("$set", new Document("monedas", e.getMonedasXP()).append("xp", e.getPuntosCrecimiento()).append("gotasAgua", e.getGotasAgua()).append("inventario", docInventario).append("miJardinVivo", listaJardin).append("ultimaRecoleccion", e.getUltimaRecoleccion()));
+            // Construimos el objeto de actualización con los datos sensibles
+            Document updateObj = new Document("monedas", e.getMonedasXP())
+                    .append("xp", e.getPuntosCrecimiento())
+                    .append("gotasAgua", e.getGotasAgua())
+                    .append("inventario", docInventario)
+                    .append("miJardinVivo", listaJardin)
+                    .append("ultimaRecoleccion", e.getUltimaRecoleccion());
+
+            // Añadimos el rastreo de misiones para prevenir exploits si existen
+            if (e.getUltimaFechaMisionMeta() != null) updateObj.append("ultimaFechaMisionMeta", e.getUltimaFechaMisionMeta());
+            if (e.getUltimaFechaMisionRiego() != null) updateObj.append("ultimaFechaMisionRiego", e.getUltimaFechaMisionRiego());
+
+            Document update = new Document("$set", updateObj);
             usuarios.updateOne(new Document("username", e.getNombre()), update);
         } catch (Exception ex) { ex.printStackTrace(); }
     }
 
-    // Updates sueltos para configuraciones rápidas sin tener que subir todo el perfil entero
     public void guardarConfiguracion(String username, int estudio, int descanso, int meta) { try { Document update = new Document("$set", new Document("minEstudio", estudio).append("minDescanso", descanso).append("metaDiaria", meta)); usuarios.updateOne(new Document("username", username), update); } catch (Exception e) {} }
     public void guardarMisAsignaturas(String username, List<String> lista) { try { usuarios.updateOne(new Document("username", username), new Document("$set", new Document("misAsignaturas", lista))); } catch (Exception e) {} }
     public List<String> obtenerMisAsignaturas(String username) { Document user = usuarios.find(new Document("username", username)).first(); if (user != null && user.containsKey("misAsignaturas")) return user.getList("misAsignaturas", String.class); return new ArrayList<>(Arrays.asList("Estudio Libre")); }
 
-    // Registra en la colección "sesiones" los minutos estudiados hoy para sacar las gráficas del Dashboard
+    // Registra en la colección "sesiones" los minutos estudiados hoy para trazar los gráficos
     public void registrarSesion(String user, String asig, int min) { Document doc = new Document("username", user).append("asignatura", asig).append("minutos", min).append("fecha", LocalDate.now().toString()); sesiones.insertOne(doc); }
     public List<Document> obtenerSesiones(String user) { return sesiones.find(new Document("username", user)).into(new ArrayList<>()); }
 
     public void actualizarXP(String u, int xp) { usuarios.updateOne(new Document("username", u), new Document("$set", new Document("xp", xp))); }
 
-    // Siempre hay que cerrar la conexión para no dejar hilos pillados colgando
+    // Cierre riguroso del driver para liberar recursos de red
     public void cerrarConexion() { if (mongoClient != null) mongoClient.close(); }
 }
