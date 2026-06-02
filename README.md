@@ -1,51 +1,35 @@
-# 🌿 StudyBuddy Desktop
+# 🌱 StudyBuddy Desktop
 
 > **Gamificación y productividad para estudiantes que pasan demasiadas horas frente al PC.**
-> Proyecto Intermodular - 2º DAM (Desarrollo de Aplicaciones Multiplataforma).
+> Proyecto Final de Grado (TFG) - 2º DAM (Desarrollo de Aplicaciones Multiplataforma).
 
-StudyBuddy es una aplicación de escritorio diseñada para combatir la procrastinación digital. A diferencia de un simple cronómetro, esta herramienta transforma el tiempo de estudio en recursos (Puntos de Crecimiento) para cuidar y evolucionar un ecosistema virtual. Si estudias, tu planta crece; si abandonas la sesión, la planta se marchita.
+StudyBuddy es una aplicación de escritorio diseñada para combatir la procrastinación digital. A diferencia de un simple cronómetro, esta herramienta transforma el tiempo de estudio en recursos (Oro y Gotas de Agua) para cuidar y evolucionar un ecosistema virtual. Si estudias, tu planta crece; si abandonas la sesión o pasas días sin conectarte, la planta se marchita.
 
-La idea nace de una necesidad real: mantener el foco cuando el entorno de trabajo (el ordenador) es también la mayor fuente de distracciones.
+La idea nace de una necesidad real: mantener el foco cuando el entorno de trabajo (el ordenador) es también la mayor fuente de distracciones, aplicando mecánicas de "aversión a la pérdida".
 
 ## 🛠️ Stack Tecnológico
 
-El proyecto está construido aplicando una arquitectura **MVC (Modelo-Vista-Controlador)** pura para separar la lógica de negocio del diseño visual:
+El proyecto está construido aplicando una arquitectura **MVC (Modelo-Vista-Controlador)** y el patrón de diseño **DAO**:
 
-* **Lenguaje:** Java (JDK 21)
-* **Interfaz Gráfica:** JavaFX (Diseño estructurado en `.fxml` y estilizado con CSS)
+* **Lenguaje:** Java (JDK 17 o superior)
+* **Interfaz Gráfica:** JavaFX (Diseño SPA estructurado en `.fxml` y estilizado con CSS)
 * **Gestor de Dependencias:** Maven
-* **Concurrencia:** Hilos (`Threads`) nativos de Java y `Platform.runLater` para la actualización de la UI en tiempo real sin cuelgues.
-* **Base de Datos:** MySQL (Conexión mediante JDBC y patrón DAO) *[En desarrollo]*
+* **Concurrencia:** Uso de la clase `Timeline` de JavaFX y `Platform.runLater` para la sincronización de temporizadores asíncronos sin bloquear la UI.
+* **Base de Datos:** MongoDB Atlas (NoSQL en la nube) utilizando *MongoDB Sync Driver*.
 
 ## ✨ Características Principales
 
-* **Sistema de Autenticación:** Login de usuarios validado para mantener sesiones individuales.
-* **Temporizador Pomodoro:** Motor de tiempo ejecutado en segundo plano (hilos) para no interferir con la fluidez de la interfaz gráfica.
-* **Gamificación en tiempo real:** Conversión de segundos de concentración en puntos de experiencia (XP) visibles instantáneamente en el Dashboard.
-* **Diseño Customizado:** Interfaz moderna que huye de los botones nativos grises, utilizando una paleta de colores verdes y tierra acorde a la temática del ecosistema.
+* **Sistema de Autenticación en la Nube:** Login y registro de usuarios persistente en clúster MongoDB.
+* **Motor Pomodoro Seguro:** Sistema de buffer de memoria que recompensa por bloques completos de 60 segundos reales estudiados, evitando hiperinflación.
+* **Invernadero Virtual:** Cuadrícula dinámica de 3x3 donde plantar semillas, regarlas y verlas crecer (Fase 0 a Fase 2) o marchitarse (Fase 3).
+* **Tienda y Economía Pasiva:** Generación de ingresos pasivos calculados mediante la clase `ChronoUnit` y compra de herramientas (Fertilizantes, Toldos, Palas).
+* **Panel de Estadísticas:** Generación de analíticas de rendimiento (`BarChart` y `PieChart`) y cálculo de Rango de Ligas en base a la experiencia obtenida.
 
-## 🚀 Instalación y Uso (Modo Desarrollo)
+## 🚀 Instalación y Uso
 
-Actualmente el proyecto está en fase de desarrollo activo. Para ejecutarlo localmente:
+Para ejecutar el proyecto en tu entorno local:
 
-1.  Clona este repositorio:
-    ```bash
-    git clone [https://github.com/ousamaka/studybuddy.git](https://github.com/ousamaka/studybuddy.git)
-    ```
-2.  Abre el proyecto en tu IDE favorito (recomendado **IntelliJ IDEA**).
-3.  Asegúrate de recargar el archivo `pom.xml` para que Maven descargue las dependencias de JavaFX.
-4.  Ejecuta la clase `Lanzador.java` (no `Main.java` directamente para evitar problemas de módulos con JavaFX).
+1. Clona este repositorio abriendo tu terminal y ejecutando:
 
-## 🚧 Estado del Proyecto
-
-Actualmente el proyecto se encuentra en un **60% de su desarrollo**:
-- [x] Análisis, diseño E-R y prototipado.
-- [x] Interfaz gráfica completa (Login y Dashboard) en FXML y CSS.
-- [x] Lógica de concurrencia (Hilos y temporizador).
-- [ ] Implementación de persistencia con base de datos MySQL local.
-- [ ] Animaciones de crecimiento del ecosistema virtual.
-
-## 👨‍💻 Autor
-
-**Ousama Kassimi**
-Desarrollador en formación | Estudiante de 2º DAM
+```bash
+git clone [https://github.com/ousamaka/studybuddy.git](https://github.com/ousamaka/studybuddy.git)
