@@ -3,7 +3,6 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.chart.*?>
-<?import javafx.geometry.Insets?>
 
 <!--
   Ventana principal de la aplicación.
